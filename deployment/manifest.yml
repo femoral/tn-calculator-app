@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tn-calculator-app
+  labels:
+    app: tn-calculator-app
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tn-calculator-app
+  template:
+    metadata:
+      labels:
+        app: tn-calculator-app
+    spec:
+      containers:
+        - name: tn-calculator-app
+          image: ghcr.io/femoral/tn-calculator-app
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tn-calculator-app-http-svc
+  labels:
+    app: tn-calculator-app
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: tn-calculator-app
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  name: tn-calculator-app-ingress
+  labels:
+    app: tn-calculator-app
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: tn-calculator-app.femoral.dev
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: tn-calculator-app-http-svc
+                port:
+                  number: 8080
+          - pathType: Prefix
+            path: /api/
+            backend:
+              service:
+                name: tn-calculator-api-http-svc
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - tn-calculator-app.femoral.dev
+      secretName: tn-calculator-app-ssl-cert
