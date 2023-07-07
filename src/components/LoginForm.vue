@@ -45,19 +45,12 @@ import { ref } from 'vue';
 
 const username = ref('');
 const password = ref('');
-const login = () => {
-  sessionApi
-    .post({
-      username: username.value,
-      password: password.value,
-    })
-    .then(() => {
-      console.log('login');
-      router.push('/home');
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+const login = async () => {
+  await sessionApi.post({
+    username: username.value,
+    password: password.value,
+  });
+  await router.push('/home');
 };
 </script>
 <style scoped></style>

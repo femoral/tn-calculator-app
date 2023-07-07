@@ -17,7 +17,7 @@ export default defineConfig({
     }),
     unpluginFonts({
       google: {
-        families: ['Jetbrains Mono'],
+        families: ['JetBrains Mono'],
       },
     }),
   ],

@@ -1,3 +1,6 @@
+import { ApiResponse } from '@/api/api.model';
+import { SessionResponse } from '@/api/model/session';
+
 const post = async ({
   username,
   password,
@@ -5,7 +8,6 @@ const post = async ({
   username: string;
   password: string;
 }) => {
-  console.log({ username, password });
   const response = await fetch('/api/v1/sessions', {
     method: 'POST',
     body: JSON.stringify({ username, password }),
@@ -15,6 +17,10 @@ const post = async ({
   });
 
   if (!response.ok) throw new Error('Invalid credentials');
+
+  const { data }: ApiResponse<SessionResponse> = await response.json();
+
+  sessionStorage.setItem('userId', data?.user?.id);
 };
 
 const del = async () => {
