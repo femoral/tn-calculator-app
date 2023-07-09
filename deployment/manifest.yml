@@ -26,6 +26,11 @@ spec:
             httpGet:
               path: /health
               port: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 60
 ---
 apiVersion: v1
 kind: Service
@@ -41,6 +46,14 @@ spec:
       name: http
   selector:
     app: tn-calculator-app
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: tn-calculator-app-kusk-fleet
+spec:
+  type: ExternalName
+  externalName: kusk-gateway-envoy-fleet.kusk-system.svc.cluster.local
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -67,9 +80,9 @@ spec:
             path: /api/
             backend:
               service:
-                name: tn-calculator-api-http-svc
+                name: tn-calculator-app-kusk-fleet
                 port:
-                  number: 8080
+                  number: 80
   tls:
     - hosts:
         - tn-calculator-app.femoral.dev

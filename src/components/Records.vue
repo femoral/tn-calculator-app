@@ -41,18 +41,13 @@ const records = ref<ApiResponse<Record[]>>({
 
 const itemsPerPage = 5;
 
-const headers: any[] = [
-  { title: 'ID', align: 'start', key: 'id', sortable: false },
-  { title: 'Operation Id', align: 'end', key: 'operation_id', sortable: false },
-  { title: 'Amount', align: 'end', key: 'amount', sortable: false },
-  { title: 'Balance', align: 'end', key: 'user_balance', sortable: false },
-  {
-    title: 'Result',
-    align: 'end',
-    key: 'operation_response',
-    sortable: false,
-  },
-  { title: 'Date', align: 'end', key: 'date', sortable: false },
+const headers = [
+  { title: 'ID', key: 'id' },
+  { title: 'Operation Id', key: 'operation_id' },
+  { title: 'Amount', key: 'amount' },
+  { title: 'Balance', key: 'user_balance' },
+  { title: 'Result', key: 'operation_response' },
+  { title: 'Date', key: 'date' },
 ];
 
 const loading = ref(true);
