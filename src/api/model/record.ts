@@ -7,3 +7,8 @@ export type Record = {
   operation_response: string;
   date: string;
 };
+
+export type RecordQuery = {
+  page_size: string;
+  page: string;
+};

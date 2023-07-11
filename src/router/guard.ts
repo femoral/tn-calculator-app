@@ -1,17 +1,21 @@
-import userApi from '@/api/user.api';
 import { Router } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 
 const guard = (router: Router) => {
   router.beforeEach(async (to, from, next) => {
-    const userData = await userApi.get();
-    console.log(userData);
-    if (to.name !== 'Login' && !userData) {
-      next({ name: 'Login' });
-    } else if (to.name === 'Login' && userData) {
-      next({ name: 'Home' });
-    } else {
-      next();
+    const userStore = useUserStore();
+
+    await userStore.updateUser();
+
+    if (to.name !== 'Login' && !userStore.isLoggedIn) {
+      return next({ name: 'Login' });
     }
+
+    if (to.name === 'Login' && userStore.isLoggedIn) {
+      return next({ name: 'Home' });
+    }
+
+    return next();
   });
 
   return router;

@@ -1,12 +1,11 @@
-import userConnector from '@/api/connector/user.connector';
+import connector from '@/api/connector';
 import { User } from '@/api/model/user';
 
-export const get = async () => {
-  try {
-    return await userConnector<User>();
-  } catch (e) {
-    return;
-  }
+export const get = async (userId: string) => {
+  const response = await connector<User>(`/users/${userId}`, {
+    cache: 'no-cache',
+  });
+  return response.data;
 };
 
 export default {

@@ -25,7 +25,7 @@
       </v-card-text>
       <v-card-actions>
         <v-btn
-          @click="login"
+          @click="() => login({ username, password })"
           block
           size="x-large"
           variant="outlined"
@@ -39,19 +39,13 @@
 </template>
 
 <script lang="ts" setup>
-import { router } from '@/router';
-import sessionApi from '@/api/session.api';
 import { ref } from 'vue';
+import { useUserStore } from '@/stores/user';
+
+const { login } = useUserStore();
 
 const username = ref('');
 const password = ref('');
-const login = async () => {
-  await sessionApi.post({
-    username: username.value,
-    password: password.value,
-  });
-  await router.push('/home');
-};
 </script>
 <style scoped></style>
 ```

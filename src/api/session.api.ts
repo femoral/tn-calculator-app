@@ -1,5 +1,7 @@
-import { ApiResponse } from '@/api/api.model';
+import { ApiResponse } from '@/api/model/api';
 import { SessionResponse } from '@/api/model/session';
+import { User } from '@/api/model/user';
+import connector from '@/api/connector';
 
 const post = async ({
   username,
@@ -7,8 +9,8 @@ const post = async ({
 }: {
   username: string;
   password: string;
-}) => {
-  const response = await fetch('/api/v1/sessions', {
+}): Promise<User> => {
+  const response = await connector<SessionResponse>('/sessions', {
     method: 'POST',
     body: JSON.stringify({ username, password }),
     headers: {
@@ -16,19 +18,13 @@ const post = async ({
     },
   });
 
-  if (!response.ok) throw new Error('Invalid credentials');
-
-  const { data }: ApiResponse<SessionResponse> = await response.json();
-
-  sessionStorage.setItem('userId', data?.user?.id);
+  return response.data.user;
 };
 
 const del = async () => {
-  const response = await fetch('/api/v1/sessions', {
+  await connector<ApiResponse<void>>('/sessions', {
     method: 'DELETE',
-  });
-
-  if (!response.ok) throw new Error('Error logging out');
+  }).catch(() => undefined);
 };
 
 export default {

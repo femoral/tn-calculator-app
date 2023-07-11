@@ -3,3 +3,8 @@ export type User = {
   username: string;
   balance: string;
 };
+
+export type UserCredentials = {
+  username: string;
+  password: string;
+};

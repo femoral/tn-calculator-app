@@ -1,13 +1,15 @@
 import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
-import { VDataTable } from 'vuetify/labs/VDataTable';
+import { VDataTableServer } from 'vuetify/labs/VDataTable';
+import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader';
 
 export default createVuetify({
   theme: {
     defaultTheme: 'dark',
   },
   components: {
-    VDataTable,
+    VDataTableServer,
+    VSkeletonLoader,
   },
 });
