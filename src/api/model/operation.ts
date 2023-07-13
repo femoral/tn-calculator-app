@@ -2,6 +2,7 @@ export type Operation = {
   id: string;
   type: string;
   cost: string;
+  operands: number;
 };
 
 export type OperationExecution = {

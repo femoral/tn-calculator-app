@@ -4,8 +4,14 @@ import { Record, RecordQuery } from '@/api/model/record';
 import { OperationExecution } from '@/api/model/operation';
 
 const get = async (userId: string, query: RecordQuery) => {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(query)) {
+    if (value) params.append(key, value);
+  }
+
   return await connector<PagedApiResponse<Record>>(
-    `/users/${userId}/records?${new URLSearchParams(query)}`,
+    `/users/${userId}/records?${params.toString()}`,
     {
       cache: 'no-cache',
     }

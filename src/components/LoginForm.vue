@@ -1,37 +1,42 @@
 <template>
   <v-container>
     <v-card class="mx-auto my-12" max-width="300">
-      <v-card-title class="my-4">
-        <v-card class="py-3">
-          <v-card-title>
-            <v-row justify="end" class="px-2" color="white">
-              <h4>Login</h4>
-            </v-row>
-          </v-card-title>
-        </v-card>
+      <v-card-title class="my-4 text-right text-uppercase">
+        <div class="color-comment">SIGN IN</div>
+        <v-divider></v-divider>
       </v-card-title>
-      <v-card-text class="mt-12">
-        <v-text-field
-          label="username"
-          v-model="username"
-          append-inner-icon="mdi-account-outline"
-        ></v-text-field>
-        <v-text-field
-          type="password"
-          v-model="password"
-          label="password"
-          append-inner-icon="mdi-lock-outline"
-        ></v-text-field>
+      <v-card-text>
+        <v-form ref="form">
+          <v-text-field
+            label="username"
+            class="mt-2"
+            v-model="username"
+            :rules="rules"
+            variant="outlined"
+            append-inner-icon="mdi-account-outline"
+            required
+          ></v-text-field>
+          <v-text-field
+            type="password"
+            class="mt-2"
+            variant="outlined"
+            v-model="password"
+            :rules="rules"
+            label="password"
+            append-inner-icon="mdi-lock-outline"
+            required
+          ></v-text-field>
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-btn
-          @click="() => login({ username, password })"
+          @click="() => login()"
           block
           size="x-large"
-          variant="outlined"
-          color="blue"
+          variant="tonal"
+          color="primary"
         >
-          login
+          SIGN IN
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -42,10 +47,22 @@
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 
-const { login } = useUserStore();
+const userStore = useUserStore();
+
+const rules = [(v: string) => !!v.trim() || 'Required'];
+
+const form = ref<HTMLFormElement>();
 
 const username = ref('');
 const password = ref('');
+
+const login = async () => {
+  const { valid } = await (form.value?.validate() ?? {});
+  if (valid) {
+    await userStore.login({
+      username: username.value,
+      password: password.value,
+    });
+  }
+};
 </script>
-<style scoped></style>
-```

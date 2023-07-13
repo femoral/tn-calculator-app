@@ -8,6 +8,9 @@ import { errorHandler } from '@/error.handler';
 const pinia = createPinia();
 const app = createApp(App);
 app.config.errorHandler = errorHandler;
+window.addEventListener('unhandledrejection', (event) =>
+  errorHandler(event.reason)
+);
 
 app.use(pinia).use(vuetify).use(router);
 

@@ -9,6 +9,12 @@ export type Record = {
 };
 
 export type RecordQuery = {
-  page_size: string;
-  page: string;
+  page_size?: string;
+  page?: string;
+  id?: string;
+  operation_id?: string;
+  amount?: string;
+  user_balance?: string;
+  operation_response?: string;
+  date?: string;
 };

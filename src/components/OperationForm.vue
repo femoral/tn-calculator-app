@@ -1,45 +1,48 @@
 <template>
-  <v-dialog v-model="display" width="auto" min-width="80%">
-    <v-card>
-      <v-card-title> New Operation </v-card-title>
+  <v-dialog v-model="display" width="400px">
+    <v-card class="pa-2">
+      <v-card-title class="text-right color-comment">
+        New Operation
+      </v-card-title>
+      <v-divider />
       <v-card-text>
         <v-container>
-          <v-row>
-            <v-col cols="12" sm="12">
-              <v-select
-                :items="operationStore.operations"
-                item-title="type"
-                label="Operation"
-                v-model="selected"
-                required
-              ></v-select>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model.number="operands[0]"
-                label="Operand"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model.number="operands[1]"
-                label="Operand"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="12" class="text-right">
-              Cost: ${{ selectedOperation?.cost || 0 }}
-            </v-col>
-          </v-row>
+          <v-form ref="form">
+            <v-select
+              :items="operationStore.operations"
+              item-title="type"
+              variant="outlined"
+              label="Operation"
+              v-model="selected"
+              :rules="operationRules"
+              required
+            ></v-select>
+            <v-text-field
+              v-for="n in selectedOperation?.operands"
+              :key="`operand-${n}`"
+              v-model.number="formOperands[n - 1]"
+              variant="outlined"
+              :label="`Operand ${n}`"
+              :rules="operandRules"
+              required
+            ></v-text-field>
+            <v-label class="mt-2 w-100 justify-end">
+              Cost: ${{ formatNumber(+(selectedOperation?.cost || 0)) }}
+            </v-label>
+          </v-form>
         </v-container>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue-darken-1" variant="text" @click="display = false">
+        <v-btn color="secondary" variant="outlined" @click="display = false">
           Close
         </v-btn>
-        <v-btn color="blue-darken-1" variant="text" @click="submitOperation">
+        <v-btn
+          color="primary"
+          variant="elevated"
+          elevation="0"
+          @click="submitOperation"
+        >
           Submit
         </v-btn>
       </v-card-actions>
@@ -49,12 +52,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useOperationStore } from '@/stores/operation';
+import { useUIStore } from '@/stores/ui';
+import { formatNumber } from '@/intl/formatter';
 
 const operationStore = useOperationStore();
+const UIStore = useUIStore();
 
 const display = ref(false);
-const operands = ref<[number, number]>([0, 0]);
+const formOperands = ref<number[]>([]);
 const selected = ref<string | undefined>();
+const form = ref<HTMLFormElement>();
+
+const operandRules = [
+  (v: string) => !!v || 'Required',
+  (v: string) => !isNaN(Number(v)) || 'Must be a number',
+];
+const operationRules = [(v: string) => !!v || 'Required'];
 
 const selectedOperation = computed(() =>
   operationStore.operations.find(
@@ -66,14 +79,31 @@ const displayDialog = () => {
   display.value = true;
 };
 
-const submitOperation = () => {
-  if (selectedOperation.value) {
-    operationStore.submitOperation({
+const resetForm = () => {
+  form.value?.reset();
+};
+
+const submitOperation = async () => {
+  const { valid } = await (form.value?.validate() ?? {});
+  if (selectedOperation.value && valid) {
+    const operands: string[] = [];
+
+    for (let i = 0; i < selectedOperation.value.operands; i++) {
+      operands.push(formOperands.value[i].toString());
+    }
+
+    await operationStore.submitOperation({
       operation_type: selectedOperation.value.type,
-      operands: operands.value.map((operand) => operand.toString()),
+      operands: operands,
     });
 
+    UIStore.displaySuccess(
+      `Operation submitted, balance deducted: $${formatNumber(
+        +selectedOperation.value?.cost
+      )}`
+    );
     display.value = false;
+    resetForm();
   }
 };
 

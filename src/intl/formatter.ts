@@ -12,3 +12,11 @@ export const formatDateTime = (value: string): string => {
     second: 'numeric',
   }).format(new Date(value));
 };
+
+export const formatDate = (value: string): string => {
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).format(new Date(value));
+};
