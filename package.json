@@ -2,9 +2,9 @@
   "name": "tn-calculator-app",
   "version": "0.0.1",
   "scripts": {
-    "dev": "vite",
+    "start:dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
+    "start:preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
